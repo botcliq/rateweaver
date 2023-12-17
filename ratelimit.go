@@ -11,7 +11,7 @@ import (
 
 func (r *ratelimit) Update(rate int, per time.Duration) {
 	d := per / time.Duration(rate)
-	fmt.Sprintf("The New Duration for sleep is : %v", d)
+	fmt.Printf("The New Duration for sleep is : %v", d)
 	r.t = d
 }
 

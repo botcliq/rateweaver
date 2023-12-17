@@ -5,7 +5,6 @@
 package rateweaver
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -26,7 +25,7 @@ func New(rate int, per time.Duration) Limiter {
 		return nil
 	}
 	d := per / time.Duration(rate)
-	fmt.Sprintf("The Duration for sleep is : %v", d)
+	// fmt.Printf("The Duration for sleep is : %v", d)
 	r := ratelimit{rate: rate, t: d, c: make(chan time.Time)}
 	go r.start()
 	return &r
