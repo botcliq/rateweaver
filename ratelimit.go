@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2023 
+ *   Copyright (c) 2023
  *   All rights reserved.
  */
 package rateweaver
@@ -11,5 +11,12 @@ func (r *ratelimit) Update(rate int, per time.Duration) {
 }
 
 func (r *ratelimit) Take() time.Time {
-	return time.Now()
+	return <-r.c
+}
+
+func (r *ratelimit) start() {
+	for {
+		time.Sleep(r.t)
+		r.c <- time.Now()
+	}
 }

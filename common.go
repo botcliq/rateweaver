@@ -31,10 +31,3 @@ func New(rate int, per time.Duration) Limiter {
 	go r.start()
 	return &r
 }
-
-func (r *ratelimit) start() {
-	for {
-		r.c <- time.Now()
-		time.Sleep(r.t)
-	}
-}

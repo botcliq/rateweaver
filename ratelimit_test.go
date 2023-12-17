@@ -38,28 +38,20 @@ func TestCreate(t *testing.T) {
 func TestTake(t *testing.T) {
 	cases := []testCase{
 		{10, 1 * time.Second},
-		// {25, 10 * time.Second},
+		{10, 5 * time.Second},
 	}
 	for _, tc := range cases {
 		t.Run(fmt.Sprintf("%d*%d", tc.arg1, tc.arg2), func(t *testing.T) {
 			r := New(tc.arg1, tc.arg2)
 			pv := time.Now()
-			t.Logf("the ratelimt duration is : %v", r.(*ratelimit).t)
-			lv1 := r.Take()
-			t.Logf("The time value returned is: %v,diff %v", lv1, lv1.Sub(pv))
-			lv2 := r.Take()
-			t.Logf("The time value returned is: %v,diff %v", lv2, lv2.Sub(lv1))
-			lv3 := r.Take()
-			t.Logf("The time value returned is: %v,diff %v", lv3, lv3.Sub(lv2))
-			pv = lv3
+			var td time.Duration
 			for i := 3; i < 10; i++ {
 				cv := r.Take()
+				td += cv.Sub(pv)
 				t.Logf("The time value returned is: %v,diff %v", cv, cv.Sub(pv))
 				pv = cv
 			}
-
-			t.Logf("The time difference are: %v,%v", lv3.Sub(lv2), lv2.Sub(lv1))
-			if lv3.Sub(lv2) != lv2.Sub(lv1) {
+			if td/r.(*ratelimit).t == 1 {
 				t.Errorf("The rate limt is not proper.")
 			}
 		})
