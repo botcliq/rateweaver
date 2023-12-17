@@ -1,6 +1,11 @@
+/*
+ *   Copyright (c) 2023
+ *   All rights reserved.
+ */
 package rateweaver
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -11,15 +16,25 @@ type ratelimit struct {
 	c    chan time.Time
 }
 
-type limiter interface {
+type Limiter interface {
 	Update(rate int, per time.Duration)
 	Take() time.Time
 }
 
-func New(rate int, per time.Duration) limiter {
+func New(rate int, per time.Duration) Limiter {
 	if rate < 0 || per < 0 {
 		return nil
 	}
 	d := per / time.Duration(rate)
-	return &ratelimit{rate: rate, t: d, c: make(chan time.Time)}
+	fmt.Sprintf("The Duration for sleep is : %v", d)
+	r := ratelimit{rate: rate, t: d, c: make(chan time.Time)}
+	go r.start()
+	return &r
+}
+
+func (r *ratelimit) start() {
+	for {
+		r.c <- time.Now()
+		time.Sleep(r.t)
+	}
 }
